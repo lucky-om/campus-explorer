@@ -1,0 +1,227 @@
+/* AR Navigation */
+.ar-page {
+    background: var(--bg);
+}
+
+/* Start screen */
+.ar-start {
+    min-height: calc(100vh - 64px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+}
+
+.ar-start-card {
+    width: 100%;
+    max-width: 560px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+}
+
+.ar-icon {
+    font-size: 3.5rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.ar-start-card h1 {
+    font-size: 1.8rem;
+}
+
+.ar-start-card p {
+    color: var(--text-2);
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+/* Destination grid */
+.ar-dest-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+}
+
+.ar-dest-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 8px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    color: var(--text-2);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: inherit;
+}
+
+.ar-dest-btn:hover {
+    border-color: var(--brand);
+    color: var(--brand);
+    background: var(--brand-light);
+}
+
+.ar-dest-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent);
+}
+
+.ar-dest-btn .dest-emoji {
+    font-size: 1.3rem;
+}
+
+.ar-dest-btn .dest-dist {
+    font-size: 0.68rem;
+    color: var(--text-3);
+}
+
+.ar-hint {
+    font-size: 0.78rem;
+    color: var(--text-3);
+}
+
+/* Live AR view */
+.ar-view {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: #000;
+}
+
+.ar-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ar-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* HUD */
+.ar-hud {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 72px 16px 24px;
+    pointer-events: none;
+}
+
+.ar-hud-info {
+    pointer-events: all;
+    display: flex;
+    justify-content: center;
+}
+
+.ar-info-card {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-lg);
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 200px;
+}
+
+.ar-dest-name {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.ar-dest-km {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+
+.ar-dist-bar {
+    height: 3px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 2px;
+    margin-top: 8px;
+}
+
+.ar-dist-progress {
+    height: 100%;
+    background: linear-gradient(90deg, var(--brand), var(--accent));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+.ar-controls-wrap {
+    pointer-events: all;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ar-ctrl {
+    padding: 7px 14px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--r-full);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 150ms;
+    font-family: inherit;
+}
+
+.ar-ctrl:hover,
+.ar-ctrl.active {
+    background: rgba(91, 79, 233, 0.4);
+    border-color: rgba(91, 79, 233, 0.6);
+    color: #fff;
+}
+
+.ar-arrived {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+}
+
+.ar-arrived-inner {
+    text-align: center;
+    padding: 40px 32px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--r-xl);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.ar-arrived-inner h2 {
+    color: #10B981;
+    font-size: 2rem;
+}
+
+.ar-arrived-inner p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
