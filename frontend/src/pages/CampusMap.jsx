@@ -811,22 +811,30 @@ export default function CampusMap() {
 
                     {/* Navigation result card */}
                     {navigation && (
-                        <div className="card card-p" style={{ borderTop: '2px solid var(--accent)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1.6s ease-in-out infinite', flexShrink: 0 }} />
-                                    <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--accent)' }}>Route Found</span>
+                        <div className="card card-p" style={{ borderTop: '2px solid var(--brand)' }}>
+                            {/* Same header style as nav card */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'linear-gradient(135deg, var(--brand), var(--accent))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', flexShrink: 0 }}>🗺️</div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text)' }}>Route Found</div>
+                                    <div style={{ fontSize: '0.67rem', color: 'var(--accent)', fontWeight: 600 }}>🕐 {navigation.time} min · {Math.round(navigation.distance)}m</div>
                                 </div>
-                                <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-2)', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: '999px', padding: '2px 8px' }}>🕐 {navigation.time} min · {Math.round(navigation.distance)}m</span>
+                                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1.6s ease-in-out infinite', flexShrink: 0 }} />
                             </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '180px', overflowY: 'auto' }}>
+
+                            <div style={{ fontSize: '0.67rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--text-3)', marginBottom: '6px' }}>Step-by-step Instructions</div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '200px', overflowY: 'auto' }}>
                                 {navigation.instructions.map((ins, i) => (
                                     <div key={i} style={{
                                         display: 'flex', alignItems: 'flex-start', gap: '6px',
                                         padding: '5px 7px', borderRadius: '7px', fontSize: '0.73rem', lineHeight: '1.4',
-                                        background: ins.type === 'floor' ? 'rgba(91,79,233,0.09)' : ins.type === 'arrive' ? 'rgba(16,185,129,0.09)' : 'transparent',
-                                        color: ins.type === 'floor' ? 'var(--brand)' : ins.type === 'arrive' ? '#10B981' : 'var(--text-2)',
-                                        borderLeft: ins.type === 'floor' ? '2px solid var(--brand)' : ins.type === 'arrive' ? '2px solid #10B981' : 'none',
+                                        background: ins.type === 'floor' ? 'rgba(91,79,233,0.09)'
+                                            : ins.type === 'arrive' ? 'rgba(16,185,129,0.09)' : 'transparent',
+                                        color: ins.type === 'floor' ? 'var(--brand)'
+                                            : ins.type === 'arrive' ? '#10B981' : 'var(--text-2)',
+                                        borderLeft: ins.type === 'floor' ? '2px solid var(--brand)'
+                                            : ins.type === 'arrive' ? '2px solid #10B981' : 'none',
                                     }}>
                                         <span style={{ flexShrink: 0 }}>{ins.text.slice(0, 2)}</span>
                                         <span>{ins.text.slice(2).trim()}</span>
