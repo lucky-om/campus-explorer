@@ -5,15 +5,19 @@ import './CampusMap.css';
 
 // ─── BUILDINGS (grid layout used by 3D map) ────────────────────────
 const BUILDINGS = [
-    { id: 'main', label: 'Main Block', icon: '🏛️', gx: 4, gy: 3, gw: 4, gd: 3, h: 80, color: '#5B4FE9', accent: '#4a3fd0', desc: 'Admin, Principal, Placement', floors: 3 },
-    { id: 'cs', label: 'CS Block', icon: '💻', gx: 9, gy: 2, gw: 3, gd: 3, h: 72, color: '#0EA5E9', accent: '#0284c7', desc: 'Computer & AI/ML Labs, Faculty', floors: 3 },
-    { id: 'it', label: 'IT Block', icon: '🌐', gx: 13, gy: 2, gw: 3, gd: 2, h: 68, color: '#10B981', accent: '#059669', desc: 'IT Labs, Network Center', floors: 3 },
-    { id: 'library', label: 'Library', icon: '📚', gx: 4, gy: 7, gw: 3, gd: 2, h: 50, color: '#F59E0B', accent: '#d97706', desc: '50,000+ Books, Digital Section', floors: 2 },
-    { id: 'canteen', label: 'Canteen', icon: '🍽️', gx: 9, gy: 7, gw: 3, gd: 2, h: 30, color: '#EF4444', accent: '#dc2626', desc: 'Food Court, 8AM–8PM', floors: 1 },
-    { id: 'auditorium', label: 'Auditorium', icon: '🎭', gx: 1, gy: 3, gw: 3, gd: 5, h: 78, color: '#8B5CF6', accent: '#7c3aed', desc: '500-Seat Auditorium', floors: 2 },
-    { id: 'parking', label: 'Parking Lot', icon: '🅿️', gx: 1, gy: 9, gw: 3, gd: 2, h: 20, color: '#64748B', accent: '#475569', desc: '2W & 4W Parking', floors: 1 },
-    { id: 'sports', label: 'Sports Complex', icon: '⚽', gx: 14, gy: 7, gw: 4, gd: 3, h: 28, color: '#22C55E', accent: '#16a34a', desc: 'Gym, Courts, Indoor Sports', floors: 1 },
-    { id: 'gate', label: 'Main Gate', icon: '🚪', gx: 8, gy: 13, gw: 2, gd: 1, h: 38, color: '#78716C', accent: '#57534e', desc: 'Campus Entrance & Security', floors: 1 },
+    { id: 'block_a', label: 'Block A (Admin)', icon: '🏛️', gx: 4, gy: 3, gw: 4, gd: 3, h: 80, color: '#94a3b8', desc: 'Admin, Principal, Placement', floors: 3 },
+    { id: 'block_b', label: 'Block B (Arch)', icon: '🏗️', gx: 9, gy: 2, gw: 3, gd: 3, h: 72, color: '#bbf7d0', desc: 'Architecture & Design', floors: 3 },
+    { id: 'block_c', label: 'Block C (CS)', icon: '💻', gx: 13, gy: 2, gw: 3, gd: 2, h: 68, color: '#fecdd3', desc: 'Computer Science Labs', floors: 3 },
+    { id: 'block_d', label: 'Block D (Library)', icon: '📚', gx: 4, gy: 7, gw: 3, gd: 2, h: 50, color: '#e9d5ff', desc: 'Books, Digital Section', floors: 2 },
+    { id: 'block_e', label: 'Block E (Elec)', icon: '⚡', gx: 9, gy: 7, gw: 3, gd: 2, h: 30, color: '#fef08a', desc: 'Electrical Labs', floors: 3 },
+    { id: 'block_f', label: 'Block F (E&C)', icon: '📻', gx: 1, gy: 3, gw: 3, gd: 5, h: 78, color: '#ffedd5', desc: 'E&C Faculty & Labs', floors: 2 },
+    { id: 'block_g', label: 'Block G (IC)', gx: 1, gy: 9, gw: 3, gd: 2, h: 20, icon: '🎛️', color: '#fbcfe8', desc: 'IC Engineering', floors: 1 },
+    { id: 'block_h', label: 'Block H (IT)', gx: 14, gy: 7, gw: 4, gd: 3, h: 28, icon: '🌐', color: '#a7f3d0', desc: 'Information Technology', floors: 1 },
+    { id: 'block_ij', label: 'Block I/J (Chem)', icon: '🧪', gx: 8, gy: 13, gw: 2, gd: 1, h: 38, color: '#dcfce7', desc: 'Chemical Engineering', floors: 1 },
+    { id: 'block_k', label: 'Block K (Science)', icon: '🔬', gx: 10, gy: 13, gw: 2, gd: 1, h: 40, color: '#bbf7d0', desc: 'Basic Science Dept', floors: 1 },
+    { id: 'block_l', label: 'Block L (Textile)', icon: '🧵', gx: 12, gy: 13, gw: 2, gd: 1, h: 35, color: '#fecdd3', desc: 'Textile Engineering', floors: 1 },
+    { id: 'tifac', label: 'TIFAC Core', icon: '🏢', gx: 14, gy: 13, gw: 2, gd: 1, h: 45, color: '#e2e8f0', desc: 'Research Center', floors: 1 },
+    { id: 'center_stage', label: 'Amphitheater', icon: '🎭', gx: 16, gy: 13, gw: 2, gd: 1, h: 10, color: '#f8fafc', desc: 'Open Air Theater', floors: 1 },
 ];
 
 // ─── ARCHITECTURAL FLOOR PLAN DATA ─────────────────────────────────
@@ -22,7 +26,7 @@ const BUILDINGS = [
 // Windows: { wallY, x, w } or { wallX, y, h }
 
 const ARCH_PLANS = {
-    cs: {
+    block_c: {
         name: 'CS Block', scale: '1:200', area: '1,800 sqm', floors: [
             {
                 label: 'Ground Floor', vw: '0 0 460 310',
@@ -109,8 +113,8 @@ const ARCH_PLANS = {
             },
         ]
     },
-    main: {
-        name: 'Main Block', scale: '1:200', area: '2,100 sqm', floors: [
+    block_a: {
+        name: 'Block A (Admin)', scale: '1:200', area: '2,100 sqm', floors: [
             {
                 label: 'Ground Floor', vw: '0 0 500 380',
                 outer: { x: 20, y: 20, w: 460, h: 340 }, W: 7,
@@ -429,17 +433,39 @@ function Map3D({ buildings, selected, onSelect }) {
 
 // ─── 2D FLAT MAP ─────────────────────────────────────────────────
 const FLAT = [
-    { id: 'main', label: 'Main Block', icon: '🏛️', x: 200, y: 150, w: 100, h: 70, color: '#5B4FE9' },
-    { id: 'cs', label: 'CS Block', icon: '💻', x: 330, y: 140, w: 90, h: 65, color: '#0EA5E9' },
-    { id: 'it', label: 'IT Block', icon: '🌐', x: 432, y: 138, w: 85, h: 60, color: '#10B981' },
-    { id: 'library', label: 'Library', icon: '📚', x: 200, y: 258, w: 85, h: 60, color: '#F59E0B' },
-    { id: 'canteen', label: 'Canteen', icon: '🍽️', x: 340, y: 268, w: 80, h: 55, color: '#EF4444' },
-    { id: 'auditorium', label: 'Auditorium', icon: '🎭', x: 108, y: 155, w: 75, h: 68, color: '#8B5CF6' },
-    { id: 'parking', label: 'Parking', icon: '🅿️', x: 108, y: 274, w: 80, h: 52, color: '#64748B' },
-    { id: 'sports', label: 'Sports', icon: '⚽', x: 432, y: 248, w: 80, h: 65, color: '#22C55E' },
-    { id: 'gate', label: 'Main Gate', icon: '🚪', x: 278, y: 380, w: 62, h: 30, color: '#78716C' },
+    // --- TOP WING ---
+    { id: 'block_a', label: 'Block A (Admin)', icon: '🏛️', x: 60, y: 50, w: 90, h: 70, color: '#94a3b8' },
+    { id: 'block_b', label: 'Block B (Arch)', icon: '🏗️', x: 170, y: 50, w: 80, h: 70, color: '#bbf7d0' },
+    { id: 'block_c', label: 'Block C (CS)', icon: '💻', x: 270, y: 50, w: 90, h: 70, color: '#fecdd3' },
+    { id: 'block_d', label: 'Block D (Library)', icon: '📚', x: 380, y: 50, w: 70, h: 70, color: '#e9d5ff' },
+
+    // --- RIGHT WING ---
+    { id: 'block_e', label: 'Block E (Elec)', icon: '⚡', x: 470, y: 50, w: 80, h: 70, color: '#fef08a' },
+    { id: 'block_f', label: 'Block F (E&C)', icon: '📻', x: 470, y: 140, w: 80, h: 80, color: '#ffedd5' },
+    { id: 'block_g', label: 'Block G (IC)', icon: '🎛️', x: 470, y: 240, w: 80, h: 70, color: '#fbcfe8' },
+    { id: 'block_h', label: 'Block H (IT)', icon: '🌐', x: 470, y: 330, w: 80, h: 80, color: '#a7f3d0' },
+
+    // --- BOTTOM WING ---
+    { id: 'block_ij', label: 'Block I/J (Chem)', icon: '🧪', x: 370, y: 340, w: 80, h: 70, color: '#dcfce7' },
+    { id: 'block_k', label: 'Block K (Science)', icon: '🔬', x: 270, y: 340, w: 80, h: 70, color: '#bbf7d0' },
+    { id: 'block_l', label: 'Block L (Textile)', icon: '🧵', x: 160, y: 340, w: 90, h: 70, color: '#fecdd3' },
+
+    // --- OTHERS ---
+    { id: 'tifac', label: 'TIFAC Core', icon: '🏢', x: 60, y: 340, w: 80, h: 70, color: '#e2e8f0' },
+    { id: 'center_stage', label: 'Amphitheater', icon: '🎭', x: 230, y: 180, w: 140, h: 100, color: '#f8fafc' },
 ];
-const FPATHS = [[[253, 410], [253, 325]], [[253, 325], [200, 290]], [[253, 325], [380, 295]], [[253, 325], [253, 215]], [[253, 215], [200, 185]], [[253, 215], [375, 172]], [[253, 215], [145, 190]], [[200, 185], [240, 290]]];
+
+const FPATHS = [
+    // Main courtyard loop
+    [[110, 140], [450, 140]],
+    [[450, 140], [450, 320]],
+    [[450, 320], [110, 320]],
+    [[110, 320], [110, 140]],
+    // Connections from loop to amphitheater center
+    [[300, 140], [300, 180]],
+    [[300, 320], [300, 280]],
+    [[450, 230], [370, 230]],
+];
 
 function Flat2D({ selected, onSelect }) {
     return (
@@ -448,7 +474,6 @@ function Flat2D({ selected, onSelect }) {
             {[...Array(10)].map((_, i) => <line key={`h${i}`} x1="0" y1={i * 50} x2="600" y2={i * 50} stroke="var(--border)" strokeWidth="1" />)}
             {[...Array(12)].map((_, i) => <line key={`v${i}`} x1={i * 50} y1="0" x2={i * 50} y2="450" stroke="var(--border)" strokeWidth="1" />)}
             {FPATHS.map((p, i) => <line key={i} x1={p[0][0]} y1={p[0][1]} x2={p[1][0]} y2={p[1][1]} stroke="var(--bg-4)" strokeWidth="8" strokeLinecap="round" />)}
-
             {FLAT.map(b => {
                 const full = BUILDINGS.find(x => x.id === b.id);
                 const s = selected?.id === b.id;
@@ -593,7 +618,7 @@ export default function CampusMap() {
                         </div>
                     </>}
 
-                    {selected && view === 'fp' && (
+                    {selected && (view === 'fp' || view === '2d' || view === '3d') && (
                         <div className="nav-controls card card-p">
                             <h3 className="text-sm font-bold mb-3 flex items-center gap-2">🧭 Indoor Navigation</h3>
                             <div className="nav-field">
