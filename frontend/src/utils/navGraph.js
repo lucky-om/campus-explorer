@@ -5,9 +5,68 @@
  */
 
 export const NAV_GRAPHS = {
+    campus: {
+        nodes: [
+            // Major Entry Points for each block
+            { id: 'ENT-BLOCK-A', x: 105, y: 120, type: 'entry', label: 'Block A Entrance', buildingId: 'block_a' },
+            { id: 'ENT-BLOCK-B', x: 210, y: 120, type: 'entry', label: 'Block B Entrance', buildingId: 'block_b' },
+            { id: 'ENT-BLOCK-C', x: 315, y: 120, type: 'entry', label: 'Block C Entrance', buildingId: 'block_c' },
+            { id: 'ENT-BLOCK-D', x: 415, y: 120, type: 'entry', label: 'Block D Entrance', buildingId: 'block_d' },
+            { id: 'ENT-BLOCK-E', x: 470, y: 85, type: 'entry', label: 'Block E Entrance', buildingId: 'block_e' },
+            { id: 'ENT-BLOCK-F', x: 470, y: 180, type: 'entry', label: 'Block F Entrance', buildingId: 'block_f' },
+            { id: 'ENT-BLOCK-G', x: 470, y: 275, type: 'entry', label: 'Block G Entrance', buildingId: 'block_g' },
+            { id: 'ENT-BLOCK-H', x: 470, y: 370, type: 'entry', label: 'Block H Entrance', buildingId: 'block_h' },
+            { id: 'ENT-BLOCK-IJ', x: 410, y: 340, type: 'entry', label: 'Block I/J Entrance', buildingId: 'block_ij' },
+            { id: 'ENT-BLOCK-K', x: 310, y: 340, type: 'entry', label: 'Block K Entrance', buildingId: 'block_k' },
+            { id: 'ENT-BLOCK-L', x: 205, y: 340, type: 'entry', label: 'Block L Entrance', buildingId: 'block_l' },
+            { id: 'ENT-TIFAC', x: 100, y: 340, type: 'entry', label: 'TIFAC Entrance', buildingId: 'tifac' },
+
+            // Campus Path Nodes (Connecting to FPATHS)
+            { id: 'CP-NW', x: 110, y: 140, type: 'path' },
+            { id: 'CP-NE', x: 450, y: 140, type: 'path' },
+            { id: 'CP-SE', x: 450, y: 320, type: 'path' },
+            { id: 'CP-SW', x: 110, y: 320, type: 'path' },
+            { id: 'CP-MID-N', x: 300, y: 140, type: 'path' },
+            { id: 'CP-MID-S', x: 300, y: 320, type: 'path' },
+            { id: 'CP-MID-E', x: 450, y: 230, type: 'path' },
+
+            // Center Stage (Amphitheater)
+            { id: 'ENT-CENTER', x: 300, y: 230, type: 'entry', label: 'Amphitheater Center', buildingId: 'center_stage' },
+        ],
+        edges: [
+            // Loop edges
+            { from: 'CP-NW', to: 'CP-MID-N', weight: 190 },
+            { from: 'CP-MID-N', to: 'CP-NE', weight: 150 },
+            { from: 'CP-NE', to: 'CP-MID-E', weight: 90 },
+            { from: 'CP-MID-E', to: 'CP-SE', weight: 90 },
+            { from: 'CP-SE', to: 'CP-MID-S', weight: 150 },
+            { from: 'CP-MID-S', to: 'CP-SW', weight: 190 },
+            { from: 'CP-SW', to: 'CP-NW', weight: 180 },
+
+            // Connection to building entrances
+            { from: 'ENT-BLOCK-A', to: 'CP-NW', weight: 30 },
+            { from: 'ENT-BLOCK-B', to: 'CP-MID-N', weight: 90 },
+            { from: 'ENT-BLOCK-C', to: 'CP-MID-N', weight: 25 },
+            { from: 'ENT-BLOCK-D', to: 'CP-NE', weight: 40 },
+            { from: 'ENT-BLOCK-E', to: 'CP-NE', weight: 60 },
+            { from: 'ENT-BLOCK-F', to: 'CP-MID-E', weight: 20 },
+            { from: 'ENT-BLOCK-G', to: 'CP-MID-E', weight: 50 },
+            { from: 'ENT-BLOCK-H', to: 'CP-SE', weight: 55 },
+            { from: 'ENT-BLOCK-IJ', to: 'CP-SE', weight: 45 },
+            { from: 'ENT-BLOCK-K', to: 'CP-MID-S', weight: 25 },
+            { from: 'ENT-BLOCK-L', to: 'CP-MID-S', weight: 95 },
+            { from: 'ENT-TIFAC', to: 'CP-SW', weight: 25 },
+
+            // Connection to Amphitheater center
+            { from: 'CP-MID-N', to: 'ENT-CENTER', weight: 90 },
+            { from: 'CP-MID-S', to: 'ENT-CENTER', weight: 90 },
+            { from: 'CP-MID-E', to: 'ENT-CENTER', weight: 150 },
+        ]
+    },
     block_c: {
         nodes: [
             // GROUND FLOOR (0)
+            { id: 'CS-G-ENT', x: 440, y: 188, floor: 0, type: 'entry', label: 'Main Entrance' },
             { id: 'CS-G-C1', x: 100, y: 160, floor: 0, type: 'corridor', label: 'Ground Corridor West' },
             { id: 'CS-G-C2', x: 230, y: 160, floor: 0, type: 'corridor', label: 'Ground Corridor Center' },
             { id: 'CS-G-C3', x: 350, y: 160, floor: 0, type: 'corridor', label: 'Ground Corridor East' },
@@ -31,6 +90,8 @@ export const NAV_GRAPHS = {
             { id: 'CS-1-STAIRS', x: 386, y: 231, floor: 1, type: 'stairs', label: '1F Stairs' },
         ],
         edges: [
+            // Entry to East Corridor
+            { from: 'CS-G-ENT', to: 'CS-106', weight: 40 },
             // Ground Floor Edges
             { from: 'CS-G-C1', to: 'CS-G-C2', weight: 130 },
             { from: 'CS-G-C2', to: 'CS-G-C3', weight: 120 },
@@ -41,6 +102,7 @@ export const NAV_GRAPHS = {
             { from: 'CS-G-C3', to: 'CS-105', weight: 30 },
             { from: 'CS-G-C3', to: 'CS-106', weight: 60 },
             { from: 'CS-106', to: 'CS-G-STAIRS', weight: 70 },
+            { from: 'CS-G-C3', to: 'CS-G-ENT', weight: 60 },
 
             // First Floor Edges
             { from: 'CS-1-C1', to: 'CS-1-C2', weight: 130 },
@@ -59,6 +121,7 @@ export const NAV_GRAPHS = {
     block_a: {
         nodes: [
             // GROUND FLOOR (0)
+            { id: 'MN-G-ENT', x: 200, y: 360, floor: 0, type: 'entry', label: 'Front Entrance' },
             { id: 'MN-G-C1', x: 250, y: 200, floor: 0, type: 'corridor', label: 'Main Lobby' },
             { id: 'MN-101', x: 96, y: 188, floor: 0, type: 'room', label: "Principal's Office" },
             { id: 'MN-102', x: 252, y: 188, floor: 0, type: 'room', label: 'Administration' },
@@ -69,6 +132,7 @@ export const NAV_GRAPHS = {
             { id: 'MN-107', x: 362, y: 323, floor: 0, type: 'stairs', label: 'Main Stairs' }
         ],
         edges: [
+            { from: 'MN-G-ENT', to: 'MN-104', weight: 155 },
             { from: 'MN-G-C1', to: 'MN-101', weight: 154 },
             { from: 'MN-G-C1', to: 'MN-102', weight: 12 },
             { from: 'MN-G-C1', to: 'MN-103', weight: 156 },
@@ -77,5 +141,17 @@ export const NAV_GRAPHS = {
             { from: 'MN-G-C1', to: 'MN-106', weight: 113 },
             { from: 'MN-106', to: 'MN-107', weight: 111 },
         ]
-    }
+    },
+    // Simplified graphs for remaining buildings to enable selection
+    block_b: { nodes: [{ id: 'B-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block B Main Door' }], edges: [] },
+    block_d: { nodes: [{ id: 'D-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Library Entrance' }], edges: [] },
+    block_e: { nodes: [{ id: 'E-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block E Main Door' }], edges: [] },
+    block_f: { nodes: [{ id: 'F-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block F Main Door' }], edges: [] },
+    block_g: { nodes: [{ id: 'G-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block G Main Door' }], edges: [] },
+    block_h: { nodes: [{ id: 'H-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block H Main Door' }], edges: [] },
+    block_ij: { nodes: [{ id: 'IJ-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block I/J Main Door' }], edges: [] },
+    block_k: { nodes: [{ id: 'K-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block K Main Door' }], edges: [] },
+    block_l: { nodes: [{ id: 'L-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Block L Main Door' }], edges: [] },
+    tifac: { nodes: [{ id: 'TI-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'TIFAC Entrance' }], edges: [] },
+    center_stage: { nodes: [{ id: 'CS-ENT', x: 100, y: 100, floor: 0, type: 'entry', label: 'Amphitheater Center' }], edges: [] },
 };
