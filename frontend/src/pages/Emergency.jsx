@@ -29,16 +29,50 @@ const TIPS = [
 
 export default function Emergency() {
     const [flashOn, setFlashOn] = useState(false);
+    const [stream, setStream] = useState(null);
 
     const call = (num) => { if (num) window.location.href = `tel:${num}`; };
+
     const toggleFlash = async () => {
-        setFlashOn(f => !f);
         try {
-            const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-            const t = s.getVideoTracks()[0];
-            await t.applyConstraints({ advanced: [{ torch: !flashOn }] });
-        } catch { alert('Flashlight not supported on this device'); }
+            if (!flashOn) {
+                const s = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                const t = s.getVideoTracks()[0];
+                
+                // Check if the device supports torch
+                const capabilities = t.getCapabilities();
+                if (capabilities.torch) {
+                    await t.applyConstraints({
+                        advanced: [{ torch: true }]
+                    });
+                    setStream(s);
+                    setFlashOn(true);
+                } else {
+                    s.getTracks().forEach(track => track.stop());
+                    alert('Flashlight (torch) not supported on this device camera.');
+                }
+            } else {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                setStream(null);
+                setFlashOn(false);
+            }
+        } catch (e) {
+            console.error('Error toggling flashlight:', e);
+            alert('Could not access camera for flashlight. Please ensure permission is granted.');
+        }
     };
+
+    React.useEffect(() => {
+        return () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [stream]);
 
     return (
         <div className="emergency-page page">
