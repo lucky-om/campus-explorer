@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLocations, logSearch } from '../services/api';
+import { NAV_GRAPHS } from '../utils/navGraph';
+import { findPath } from '../utils/pathfinding';
+import { calculateDistance, generateInstructions } from '../utils/navigationUtils';
 import './CampusMap.css';
 
 // ─── BUILDINGS (grid layout used by 3D map) ────────────────────────
