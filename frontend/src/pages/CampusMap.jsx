@@ -587,6 +587,21 @@ export default function CampusMap() {
     }, []);
 
     const pick = (b) => {
+        // If navigation is active and user clicks the destination building,
+        // switch to it without clearing the navigation state
+        if (navigation && navigation.endBuildingId === b.id) {
+            setSelected(b);
+            setFloor(0);
+            return;
+        }
+        // If navigation is active and user clicks the start building,
+        // also preserve navigation
+        if (navigation && navigation.startBuildingId === b.id) {
+            setSelected(b);
+            setFloor(0);
+            return;
+        }
+        // Otherwise clear navigation (new building unrelated to current route)
         setSelected(b);
         setFloor(0);
         clearNav();
