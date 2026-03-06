@@ -156,9 +156,17 @@ const ARCH_PLANS = {
 const DFLT_PLAN = { name: 'Floor Plan', scale: '1:200', area: '—', floors: [{ label: 'Ground Floor', vw: '0 0 300 200', outer: { x: 20, y: 20, w: 260, h: 160 }, W: 7, corridors: [], rooms: [], doors: [], windows: [], cols: [], stairs: [] }] };
 
 // ─── FLOOR PLAN RENDERER ──────────────────────────────────────────
-function FloorPlanSVG({ plan, fi }) {
+function FloorPlanSVG({ plan, fi, navigation, buildingId }) {
     const floor = plan.floors[fi] || plan.floors[0];
     const { outer, W, rooms, corridors, doors, windows, cols, stairs } = floor;
+
+    // Build path nodes for current floor from the indoor portion of navigation
+    const navNodes = navigation?.path?.filter(
+        n => !n.id.startsWith('CP-') && !n.id.startsWith('ENT-') && n.floor === fi
+    ) || [];
+    const navPoints = navNodes.length > 1 ? navNodes.map(n => `${n.x},${n.y}`).join(' ') : null;
+    const navStart = navNodes[0];
+    const navEnd = navNodes[navNodes.length - 1];
 
     const Door = ({ d }) => {
         if (d.wallY !== undefined) {
@@ -263,6 +271,22 @@ function FloorPlanSVG({ plan, fi }) {
 
             {/* Doors */}
             {(doors || []).map((d, i) => <Door key={i} d={d} />)}
+
+            {/* 🔵 Navigation Path Overlay (indoor routing) */}
+            {navPoints && (
+                <>
+                    {/* Thick blue line */}
+                    <polyline points={navPoints} fill="none" stroke="#0EA5E9" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+                    {/* White dashes */}
+                    <polyline points={navPoints} fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="5,12" opacity="0.75" />
+                    {/* Start: green circle */}
+                    {navStart && <circle cx={navStart.x} cy={navStart.y} r="5" fill="#22C55E" stroke="white" strokeWidth="1.5" />}
+                    {navStart && <text x={navStart.x + 7} y={navStart.y + 3} fontSize="5" fill="#22C55E" fontWeight="700" fontFamily="Inter">START</text>}
+                    {/* End: red circle */}
+                    {navEnd && navEnd.id !== navStart?.id && <circle cx={navEnd.x} cy={navEnd.y} r="5" fill="#EF4444" stroke="white" strokeWidth="1.5" />}
+                    {navEnd && navEnd.id !== navStart?.id && <text x={navEnd.x + 7} y={navEnd.y + 3} fontSize="5" fill="#EF4444" fontWeight="700" fontFamily="Inter">END</text>}
+                </>
+            )}
 
             {/* North arrow */}
             <g transform={`translate(${vw - 18},18)`}>
@@ -813,7 +837,7 @@ export default function CampusMap() {
                                         <button className="btn btn-primary btn-sm" onClick={launchAR}>🔮 AR Navigate to {selected.label}</button>
                                     </div>
                                     <div className="fp-scroll-wrap">
-                                        <FloorPlanSVG plan={archPlan} fi={floor} />
+                                        <FloorPlanSVG plan={archPlan} fi={floor} navigation={navigation} buildingId={selected?.id} />
                                     </div>
                                 </div>
                             )}
