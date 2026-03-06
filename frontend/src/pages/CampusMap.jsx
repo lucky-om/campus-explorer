@@ -764,50 +764,47 @@ export default function CampusMap() {
                     </>}
 
                     {selected && (view === 'fp' || view === '2d' || view === '3d') && (
-                        <div className="nav-card">
-                            <div className="nav-card-header">
-                                <div className="nav-card-header-icon">🧭</div>
-                                <div className="nav-card-header-text">
-                                    <h4>Indoor & Campus Navigation</h4>
-                                    <span>{selected.label}</span>
+                        <div className="card card-p" style={{ borderTop: '2px solid var(--brand)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'linear-gradient(135deg, var(--brand), var(--accent))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', flexShrink: 0 }}>🧭</div>
+                                <div>
+                                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text)' }}>Indoor & Campus Navigation</div>
+                                    <div style={{ fontSize: '0.67rem', color: 'var(--brand)', fontWeight: 600 }}>{selected.label}</div>
                                 </div>
                             </div>
-                            <div className="nav-card-body">
-                                <div>
-                                    <div className="nav-field-label">From (Room / Exit)</div>
-                                    <select value={startNode} onChange={e => setStartNode(e.target.value)} className="nav-select">
-                                        <option value="">Select starting point…</option>
-                                        {(NAV_GRAPHS[selected.id]?.nodes || []).map(n => (
-                                            <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
-                                        ))}
-                                    </select>
-                                </div>
 
-                                <div>
-                                    <div className="nav-field-label">Destination Building</div>
-                                    <select value={destBuildingId || selected.id} onChange={e => { setDestBuildingId(e.target.value); setEndNode(''); }} className="nav-select">
-                                        {BUILDINGS.map(b => (
-                                            <option key={b.id} value={b.id}>{b.label}</option>
-                                        ))}
-                                    </select>
-                                </div>
+                            <div style={{ marginBottom: '8px' }}>
+                                <label style={{ display: 'block', fontSize: '0.67rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--text-3)', marginBottom: '4px' }}>From (Room/Exit):</label>
+                                <select value={startNode} onChange={e => setStartNode(e.target.value)} className="input-field" style={{ fontSize: '0.78rem' }}>
+                                    <option value="">Select starting point...</option>
+                                    {(NAV_GRAPHS[selected.id]?.nodes || []).map(n => (
+                                        <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                                <div>
-                                    <div className="nav-field-label">To (Room / Location)</div>
-                                    <select value={endNode} onChange={e => setEndNode(e.target.value)} className="nav-select">
-                                        <option value="">Select destination…</option>
-                                        {(NAV_GRAPHS[destBuildingId || selected.id]?.nodes || []).filter(n => n.type === 'room').map(n => (
-                                            <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
-                                        ))}
-                                    </select>
-                                </div>
+                            <div style={{ marginBottom: '8px' }}>
+                                <label style={{ display: 'block', fontSize: '0.67rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--text-3)', marginBottom: '4px' }}>Destination Building:</label>
+                                <select value={destBuildingId || selected.id} onChange={e => { setDestBuildingId(e.target.value); setEndNode(''); }} className="input-field" style={{ fontSize: '0.78rem' }}>
+                                    {BUILDINGS.map(b => (
+                                        <option key={b.id} value={b.id}>{b.label}</option>
+                                    ))}
+                                </select>
+                            </div>
 
-                                <div className="nav-btn-row">
-                                    <button className="nav-btn-start" onClick={handleNavigate} disabled={!startNode || !endNode}>
-                                        ▶ Start Navigation
-                                    </button>
-                                    <button className="nav-btn-clear" onClick={clearNav}>✕ Clear</button>
-                                </div>
+                            <div style={{ marginBottom: '10px' }}>
+                                <label style={{ display: 'block', fontSize: '0.67rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--text-3)', marginBottom: '4px' }}>To (Room/Location):</label>
+                                <select value={endNode} onChange={e => setEndNode(e.target.value)} className="input-field" style={{ fontSize: '0.78rem' }}>
+                                    <option value="">Select destination...</option>
+                                    {(NAV_GRAPHS[destBuildingId || selected.id]?.nodes || []).filter(n => n.type === 'room').map(n => (
+                                        <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                                <button className="btn btn-primary btn-sm" style={{ flex: 1 }} onClick={handleNavigate} disabled={!startNode || !endNode}>▶ Start Navigation</button>
+                                <button className="btn btn-secondary btn-sm" onClick={clearNav}>✕ Clear</button>
                             </div>
                         </div>
                     )}
