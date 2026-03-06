@@ -410,27 +410,18 @@
     background: var(--bg-3);
     border: 1px solid var(--border-strong);
     border-radius: var(--r-sm);
-    padding: 7px 28px 7px 10px;
+    padding: 7px 10px;
     font-size: 0.78rem;
     color: var(--text);
-    appearance: none;
     font-family: inherit;
     cursor: pointer;
     transition: border-color 150ms, box-shadow 150ms;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B6B78' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 9px center;
 }
 
 .nav-select:focus {
     outline: none;
     border-color: var(--brand);
     box-shadow: 0 0 0 3px var(--brand-light);
-}
-
-.nav-select option {
-    background: var(--bg-3);
-    color: var(--text);
 }
 
 .nav-btn-row {
