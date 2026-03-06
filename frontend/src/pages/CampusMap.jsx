@@ -802,9 +802,9 @@ export default function CampusMap() {
                                 </select>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '6px', width: '100%', boxSizing: 'border-box' }}>
-                                <button className="btn btn-primary btn-sm" style={{ flex: 1, minWidth: 0 }} onClick={handleNavigate} disabled={!startNode || !endNode}>▶ Start Navigation</button>
-                                <button className="btn btn-secondary btn-sm" style={{ flexShrink: 0 }} onClick={clearNav}>✕ Clear</button>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                <button className="btn btn-primary btn-sm" style={{ width: '100%' }} onClick={handleNavigate} disabled={!startNode || !endNode}>▶ Start Navigation</button>
+                                <button className="btn btn-secondary btn-sm" style={{ width: '100%' }} onClick={clearNav}>✕ Clear</button>
                             </div>
                         </div>
                     )}
