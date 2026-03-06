@@ -193,9 +193,10 @@ export const NAV_GRAPHS = {
             { id: 'D-CS-101', x: 109, y: 148, floor: 0, type: 'door', label: 'Door CS-101' },
             { id: 'D-CS-102', x: 326, y: 148, floor: 0, type: 'door', label: 'Door CS-102' },
 
-            // South doors (y = 172)
+            // South doors (y = 172) — note: stairs room also sits below this wall
             { id: 'D-CS-103', x: 93, y: 172, floor: 0, type: 'door', label: 'Door CS-103' },
             { id: 'D-CS-105', x: 326, y: 172, floor: 0, type: 'door', label: 'Door CS-105/106' },
+            { id: 'D-CS-STAIR', x: 404, y: 172, floor: 0, type: 'door', label: 'Door to Stairs GF' },
 
             // Room centres GF
             { id: 'CS-101', x: 124, y: 84, floor: 0, type: 'room', label: 'Computer Lab 1' },
@@ -204,7 +205,7 @@ export const NAV_GRAPHS = {
             { id: 'CS-104', x: 234, y: 231, floor: 0, type: 'room', label: 'Server Room' },
             { id: 'CS-105', x: 320, y: 201, floor: 0, type: 'room', label: 'HOD Office' },
             { id: 'CS-106', x: 404, y: 201, floor: 0, type: 'room', label: 'Reception' },
-            { id: 'CS-G-STAIR', x: 404, y: 262, floor: 0, type: 'stairs', label: 'Ground Stairs' },
+            { id: 'CS-G-STAIR', x: 404, y: 262, floor: 0, type: 'stairs', label: 'Stairs / Lift (GF)' },
 
             // ── First Floor (fi=1) ──
             { id: 'CS-1CW', x: 76, y: 160, floor: 1, type: 'corridor', label: '1F Corridor West' },
@@ -219,6 +220,7 @@ export const NAV_GRAPHS = {
             { id: 'D-CS-203', x: 76, y: 172, floor: 1, type: 'door', label: 'Door CS-203' },
             { id: 'D-CS-204', x: 176, y: 172, floor: 1, type: 'door', label: 'Door CS-204' },
             { id: 'D-CS-205', x: 286, y: 172, floor: 1, type: 'door', label: 'Door CS-205' },
+            { id: 'D-CS-1STR', x: 386, y: 172, floor: 1, type: 'door', label: 'Door to Stairs 1F' },
 
             // Room centres 1F
             { id: 'CS-201', x: 168, y: 84, floor: 1, type: 'room', label: 'AI/ML Lab' },
@@ -271,8 +273,10 @@ export const NAV_GRAPHS = {
             { from: 'CS-104', to: 'D-CS-103', weight: 76 },  // closest door
             { from: 'CS-105', to: 'D-CS-105', weight: 29 },
 
-            // Stairs
-            { from: 'CS-GCE', to: 'CS-G-STAIR', weight: 102 },
+            // Stairs route: GCE → door → stairs room (all vertical/horizontal, no diagonal)
+            { from: 'CS-GCE', to: 'D-CS-STAIR', weight: 78 },
+            { from: 'D-CS-STAIR', to: 'CS-G-STAIR', weight: 90 },
+            { from: 'CS-106', to: 'D-CS-STAIR', weight: 30 },
 
             // ── First Floor ──
             { from: 'CS-1CW', to: 'CS-1CC', weight: 154 },
@@ -290,7 +294,9 @@ export const NAV_GRAPHS = {
             { from: 'CS-203', to: 'D-CS-203', weight: 59 },
             { from: 'CS-204', to: 'D-CS-204', weight: 59 },
             { from: 'CS-205', to: 'D-CS-205', weight: 29 },
-            { from: 'CS-1CE', to: 'CS-1-STAIR', weight: 89 },
+            // 1F stairs via door waypoint
+            { from: 'CS-1CE', to: 'D-CS-1STR', weight: 15 },
+            { from: 'D-CS-1STR', to: 'CS-1-STAIR', weight: 77 },
 
             // ── Second Floor ──
             // Large Seminar Hall → door waypoints
