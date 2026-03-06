@@ -470,33 +470,66 @@ const FPATHS = [
     [[450, 230], [370, 230]],
 ];
 
-function Flat2D({ selected, onSelect, navigation }) {
-    const campusPath = navigation?.path?.filter(n => n.id.startsWith('CP-') || n.id.startsWith('ENT-'));
+function Flat2D({ selected, onSelect, navigation, userPos }) {
+    // Collect all campus-level path nodes (loop waypoints + building entries)
+    const campusNodes = navigation?.path?.filter(
+        n => n.id.startsWith('CP-') || n.id.startsWith('ENT-')
+    ) || [];
+    const pathPoints = campusNodes.length > 1
+        ? campusNodes.map(n => `${n.x},${n.y}`).join(' ')
+        : null;
+
+    const startBId = navigation?.startBuildingId;
+    const endBId = navigation?.endBuildingId;
 
     return (
-        <svg viewBox="0 0 600 450" className="campus-svg">
+        <svg viewBox="0 0 600 450" className="campus-svg" style={{ display: 'block', width: '100%', height: '100%' }}>
             <rect width="600" height="450" fill="var(--bg)" />
+
+            {/* Grid lines */}
             {[...Array(10)].map((_, i) => <line key={`h${i}`} x1="0" y1={i * 50} x2="600" y2={i * 50} stroke="var(--border)" strokeWidth="1" />)}
             {[...Array(12)].map((_, i) => <line key={`v${i}`} x1={i * 50} y1="0" x2={i * 50} y2="450" stroke="var(--border)" strokeWidth="1" />)}
-            {FPATHS.map((p, i) => <line key={i} x1={p[0][0]} y1={p[0][1]} x2={p[1][0]} y2={p[1][1]} stroke="var(--bg-4)" strokeWidth="8" strokeLinecap="round" />)}
 
-            {/* Campus Navigation Path Overlay */}
-            {campusPath && campusPath.length > 1 && (
-                <polyline
-                    points={campusPath.map(n => `${n.x},${n.y}`).join(' ')}
-                    fill="none" stroke="#0EA5E9" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1,12" style={{ animation: 'flow 2s linear infinite' }}
-                />
+            {/* Campus walkways */}
+            {FPATHS.map((p, i) => <line key={i} x1={p[0][0]} y1={p[0][1]} x2={p[1][0]} y2={p[1][1]} stroke="var(--bg-4)" strokeWidth="10" strokeLinecap="round" />)}
+
+            {/* 🔵 Navigation path – solid blue line */}
+            {pathPoints && (
+                <polyline points={pathPoints} fill="none" stroke="#0EA5E9" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+            )}
+            {/* White dashes on top for Google Maps effect */}
+            {pathPoints && (
+                <polyline points={pathPoints} fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="6,14" opacity="0.7" />
             )}
 
+            {/* Buildings */}
             {FLAT.map(b => {
                 const full = BUILDINGS.find(x => x.id === b.id);
                 const s = selected?.id === b.id;
-                return <g key={b.id} onClick={() => full && onSelect(full)} style={{ cursor: 'pointer' }}>
-                    <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="8" fill={s ? b.color : `${b.color}18`} stroke={b.color} strokeWidth={s ? 2.5 : 1.5} style={{ filter: s ? `drop-shadow(0 0 10px ${b.color}80)` : 'none', transition: 'all 0.2s' }} />
-                    <text x={b.x + b.w / 2} y={b.y + b.h / 2 - 7} textAnchor="middle" fontSize="13" dominantBaseline="middle">{b.icon}</text>
-                    <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 9} textAnchor="middle" fontSize="8" fill={s ? 'white' : 'var(--text-2)'} fontFamily="Inter,sans-serif" fontWeight="600">{b.label}</text>
-                </g>;
+                const isS = startBId === b.id;
+                const isE = endBId === b.id;
+                return (
+                    <g key={b.id} onClick={() => full && onSelect(full)} style={{ cursor: 'pointer' }}>
+                        <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="8"
+                            fill={s ? b.color : `${b.color}18`}
+                            stroke={isS ? '#22C55E' : isE ? '#EF4444' : b.color}
+                            strokeWidth={s ? 2.5 : isS || isE ? 3 : 1.5}
+                            style={{ filter: s || isS || isE ? `drop-shadow(0 0 10px ${b.color}80)` : 'none', transition: 'all 0.2s' }}
+                        />
+                        <text x={b.x + b.w / 2} y={b.y + b.h / 2 - 7} textAnchor="middle" fontSize="13" dominantBaseline="middle">{b.icon}</text>
+                        <text x={b.x + b.w / 2} y={b.y + b.h / 2 + 9} textAnchor="middle" fontSize="8" fill={s ? 'white' : 'var(--text-2)'} fontFamily="Inter,sans-serif" fontWeight="600">{b.label}</text>
+                        {isS && <text x={b.x + b.w / 2} y={b.y - 5} textAnchor="middle" fontSize="9" fill="#22C55E" fontWeight="800">▶ START</text>}
+                        {isE && <text x={b.x + b.w / 2} y={b.y - 5} textAnchor="middle" fontSize="9" fill="#EF4444" fontWeight="800">🏁 END</text>}
+                    </g>
+                );
             })}
+
+            {/* Start dot (green) */}
+            {startBId && (() => { const b = FLAT.find(x => x.id === startBId); return b ? <circle cx={b.x + b.w / 2} cy={b.y + b.h / 2} r="7" fill="#22C55E" stroke="white" strokeWidth="2.5" /> : null; })()}
+            {/* End dot (red) */}
+            {endBId && endBId !== startBId && (() => { const b = FLAT.find(x => x.id === endBId); return b ? <circle cx={b.x + b.w / 2} cy={b.y + b.h / 2} r="7" fill="#EF4444" stroke="white" strokeWidth="2.5" /> : null; })()}
+
+            {/* Compass rose */}
             <g transform="translate(555,40)">
                 <circle cx={0} cy={0} r={20} fill="var(--bg-2)" stroke="var(--border-strong)" strokeWidth="1" />
                 <text textAnchor="middle" y="-6" fontSize="7" fill="var(--text)" fontFamily="Inter">N</text>
@@ -506,6 +539,7 @@ function Flat2D({ selected, onSelect, navigation }) {
         </svg>
     );
 }
+
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────
 export default function CampusMap() {
@@ -548,11 +582,13 @@ export default function CampusMap() {
         let fullPath = [];
         let instructions = [];
         let totalDist = 0;
+        let startBuildingId = selected.id;
+        let endBuildingId = destBuildingId || selected.id;
 
-        const isGlobal = !!destBuildingId && destBuildingId !== selected?.id;
+        const isGlobal = !!destBuildingId && destBuildingId !== selected.id;
 
         if (!isGlobal) {
-            // Standard Indoor Navigation
+            // ── Indoor navigation (same building) ──
             const graph = NAV_GRAPHS[selected.id];
             if (!graph) return;
             const path = findPath(graph, startNode, endNode);
@@ -561,41 +597,52 @@ export default function CampusMap() {
             instructions = generateInstructions(path);
             totalDist = calculateDistance(path);
         } else {
-            // Global Cross-Building Navigation
+            // ── Cross-building navigation ──
             const campusGraph = NAV_GRAPHS.campus;
             const startBuildingGraph = NAV_GRAPHS[selected.id];
             const endBuildingGraph = NAV_GRAPHS[destBuildingId];
-
             if (!campusGraph || !startBuildingGraph || !endBuildingGraph) return;
 
-            // 1. Path from start room to building exit
+            // Part 1: room → building exit (indoor)
             const startExit = startBuildingGraph.nodes.find(n => n.type === 'entry');
+            if (!startExit) return;
             const path1 = findPath(startBuildingGraph, startNode, startExit.id);
 
-            // 2. Path across campus
-            const campusStart = campusGraph.nodes.find(n => n.buildingId === selected.id);
-            const campusEnd = campusGraph.nodes.find(n => n.buildingId === destBuildingId);
-            const path2 = findPath(campusGraph, campusStart.id, campusEnd.id);
+            // Part 2: campus entry → campus entry (outdoor, using new ENT-block_x IDs)
+            const campusEntryStart = `ENT-${selected.id}`;
+            const campusEntryEnd = `ENT-${destBuildingId}`;
+            const path2 = findPath(campusGraph, campusEntryStart, campusEntryEnd);
 
-            // 3. Path from building entry to destination room
+            // Part 3: building entry → dest room (indoor)
             const endEntry = endBuildingGraph.nodes.find(n => n.type === 'entry');
+            if (!endEntry) return;
             const path3 = findPath(endBuildingGraph, endEntry.id, endNode);
 
-            if (path1 && path2 && path3) {
-                fullPath = [...path1, ...path2, ...path3];
-                instructions = [
-                    ...generateInstructions(path1),
-                    { type: 'info', text: `Exit ${selected.label} and head towards ${BUILDINGS.find(b => b.id === destBuildingId)?.label}` },
-                    ...generateInstructions(path2),
-                    { type: 'info', text: `Enter ${BUILDINGS.find(b => b.id === destBuildingId)?.label}` },
-                    ...generateInstructions(path3)
-                ];
-                totalDist = calculateDistance(path1) + calculateDistance(path2) + calculateDistance(path3);
+            if (!path1 || !path2 || !path3) {
+                alert('Could not find a complete route. Please check start/end points.');
+                return;
             }
+
+            fullPath = [...path1, ...path2, ...path3];
+            instructions = [
+                ...generateInstructions(path1),
+                { type: 'floor', text: `🚶 Exit ${selected.label} and walk to ${BUILDINGS.find(b => b.id === destBuildingId)?.label}` },
+                ...generateInstructions(path2),
+                { type: 'floor', text: `🏢 Enter ${BUILDINGS.find(b => b.id === destBuildingId)?.label}` },
+                ...generateInstructions(path3),
+            ];
+            totalDist = calculateDistance(path1) + calculateDistance(path2) + calculateDistance(path3);
         }
 
         if (fullPath.length > 0) {
-            setNavigation({ path: fullPath, instructions, distance: totalDist, time: Math.ceil(totalDist / 1.4 / 60) });
+            setNavigation({
+                path: fullPath,
+                instructions,
+                distance: totalDist,
+                time: Math.ceil(totalDist / 1.4 / 60),
+                startBuildingId,
+                endBuildingId,
+            });
             setUserPos(fullPath[0]);
         }
     };
@@ -714,6 +761,23 @@ export default function CampusMap() {
                             </div>
                         </div>
                     )}
+                    {/* Navigation result card */}
+                    {navigation && (
+                        <div className="card card-p" style={{ borderLeft: '3px solid #0EA5E9' }}>
+                            <div className="flex-between mb-2">
+                                <span className="font-bold text-xs" style={{ color: '#0EA5E9' }}>🧭 Route Found</span>
+                                <span className="tag">{navigation.time} min · {Math.round(navigation.distance)}m</span>
+                            </div>
+                            <div style={{ maxHeight: '160px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                {navigation.instructions.map((ins, i) => (
+                                    <div key={i} className="text-xs" style={{ padding: '3px 6px', borderRadius: '4px', background: ins.type === 'floor' ? 'var(--brand-light)' : 'var(--bg-2)', color: ins.type === 'floor' ? 'var(--brand)' : 'var(--text-2)' }}>
+                                        {ins.text}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                 </aside>
 
                 <div className="map-container">
@@ -757,7 +821,7 @@ export default function CampusMap() {
                     ) : view === '3d' ? (
                         <Map3D buildings={filtered} selected={selected} onSelect={b => { pick(b); }} />
                     ) : (
-                        <Flat2D selected={selected} onSelect={pick} navigation={navigation} />
+                        <Flat2D selected={selected} onSelect={pick} navigation={navigation} userPos={userPos} />
                     )}
                 </div>
             </div>
