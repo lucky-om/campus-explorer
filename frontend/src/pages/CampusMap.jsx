@@ -764,59 +764,71 @@ export default function CampusMap() {
                     </>}
 
                     {selected && (view === 'fp' || view === '2d' || view === '3d') && (
-                        <div className="nav-controls card card-p">
-                            <h3 className="text-sm font-bold mb-3 flex items-center gap-2">🧭 Indoor & Campus Navigation</h3>
-
-                            <div className="nav-field">
-                                <label>Current Building: <span className="text-brand font-bold">{selected.label}</span></label>
+                        <div className="nav-card">
+                            <div className="nav-card-header">
+                                <div className="nav-card-header-icon">🧭</div>
+                                <div className="nav-card-header-text">
+                                    <h4>Indoor & Campus Navigation</h4>
+                                    <span>{selected.label}</span>
+                                </div>
                             </div>
+                            <div className="nav-card-body">
+                                <div>
+                                    <div className="nav-field-label">From (Room / Exit)</div>
+                                    <select value={startNode} onChange={e => setStartNode(e.target.value)} className="nav-select">
+                                        <option value="">Select starting point…</option>
+                                        {(NAV_GRAPHS[selected.id]?.nodes || []).map(n => (
+                                            <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            <div className="nav-field">
-                                <label>From (Room/Exit):</label>
-                                <select value={startNode} onChange={e => setStartNode(e.target.value)} className="input-field text-xs">
-                                    <option value="">Select starting point...</option>
-                                    {(NAV_GRAPHS[selected.id]?.nodes || []).map(n => (
-                                        <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
-                                    ))}
-                                </select>
-                            </div>
+                                <div>
+                                    <div className="nav-field-label">Destination Building</div>
+                                    <select value={destBuildingId || selected.id} onChange={e => { setDestBuildingId(e.target.value); setEndNode(''); }} className="nav-select">
+                                        {BUILDINGS.map(b => (
+                                            <option key={b.id} value={b.id}>{b.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            <div className="nav-field">
-                                <label>Destination Building:</label>
-                                <select value={destBuildingId || selected.id} onChange={e => { setDestBuildingId(e.target.value); setEndNode(''); }} className="input-field text-xs">
-                                    {BUILDINGS.map(b => (
-                                        <option key={b.id} value={b.id}>{b.label}</option>
-                                    ))}
-                                </select>
-                            </div>
+                                <div>
+                                    <div className="nav-field-label">To (Room / Location)</div>
+                                    <select value={endNode} onChange={e => setEndNode(e.target.value)} className="nav-select">
+                                        <option value="">Select destination…</option>
+                                        {(NAV_GRAPHS[destBuildingId || selected.id]?.nodes || []).filter(n => n.type === 'room').map(n => (
+                                            <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            <div className="nav-field">
-                                <label>To (Room/Location):</label>
-                                <select value={endNode} onChange={e => setEndNode(e.target.value)} className="input-field text-xs">
-                                    <option value="">Select destination...</option>
-                                    {(NAV_GRAPHS[destBuildingId || selected.id]?.nodes || []).filter(n => n.type === 'room').map(n => (
-                                        <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="flex gap-2 mt-4">
-                                <button className="btn btn-primary flex-1 btn-sm" onClick={handleNavigate} disabled={!startNode || !endNode}>Start Navigation</button>
-                                <button className="btn btn-secondary btn-sm" onClick={clearNav}>Clear</button>
+                                <div className="nav-btn-row">
+                                    <button className="nav-btn-start" onClick={handleNavigate} disabled={!startNode || !endNode}>
+                                        ▶ Start Navigation
+                                    </button>
+                                    <button className="nav-btn-clear" onClick={clearNav}>✕ Clear</button>
+                                </div>
                             </div>
                         </div>
                     )}
+
                     {/* Navigation result card */}
                     {navigation && (
-                        <div className="card card-p" style={{ borderLeft: '3px solid #0EA5E9' }}>
-                            <div className="flex-between mb-2">
-                                <span className="font-bold text-xs" style={{ color: '#0EA5E9' }}>🧭 Route Found</span>
-                                <span className="tag">{navigation.time} min · {Math.round(navigation.distance)}m</span>
+                        <div className="route-card">
+                            <div className="route-card-header">
+                                <div className="route-found-badge">
+                                    <span className="dot-pulse" />
+                                    Route Found
+                                </div>
+                                <div className="route-time-badge">
+                                    🕐 {navigation.time} min · {Math.round(navigation.distance)}m
+                                </div>
                             </div>
-                            <div style={{ maxHeight: '160px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div className="route-steps">
                                 {navigation.instructions.map((ins, i) => (
-                                    <div key={i} className="text-xs" style={{ padding: '3px 6px', borderRadius: '4px', background: ins.type === 'floor' ? 'var(--brand-light)' : 'var(--bg-2)', color: ins.type === 'floor' ? 'var(--brand)' : 'var(--text-2)' }}>
-                                        {ins.text}
+                                    <div key={i} className={`route-step step-${ins.type}`}>
+                                        <span className="route-step-icon">{ins.text.slice(0, 2)}</span>
+                                        <span>{ins.text.slice(2).trim()}</span>
                                     </div>
                                 ))}
                             </div>
@@ -869,7 +881,7 @@ export default function CampusMap() {
                         <Flat2D selected={selected} onSelect={pick} navigation={navigation} userPos={userPos} />
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
