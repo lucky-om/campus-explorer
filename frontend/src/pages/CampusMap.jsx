@@ -441,23 +441,13 @@ const FLAT = [
 ];
 const FPATHS = [[[253, 410], [253, 325]], [[253, 325], [200, 290]], [[253, 325], [380, 295]], [[253, 325], [253, 215]], [[253, 215], [200, 185]], [[253, 215], [375, 172]], [[253, 215], [145, 190]], [[200, 185], [240, 290]]];
 
-function Flat2D({ selected, onSelect, navigation }) {
-    const campusPath = navigation?.path?.filter(n => n.id.startsWith('CP-') || n.id.startsWith('ENT-'));
-
+function Flat2D({ selected, onSelect }) {
     return (
         <svg viewBox="0 0 600 450" className="campus-svg">
             <rect width="600" height="450" fill="var(--bg)" />
             {[...Array(10)].map((_, i) => <line key={`h${i}`} x1="0" y1={i * 50} x2="600" y2={i * 50} stroke="var(--border)" strokeWidth="1" />)}
             {[...Array(12)].map((_, i) => <line key={`v${i}`} x1={i * 50} y1="0" x2={i * 50} y2="450" stroke="var(--border)" strokeWidth="1" />)}
             {FPATHS.map((p, i) => <line key={i} x1={p[0][0]} y1={p[0][1]} x2={p[1][0]} y2={p[1][1]} stroke="var(--bg-4)" strokeWidth="8" strokeLinecap="round" />)}
-
-            {/* Campus Navigation Path */}
-            {campusPath && campusPath.length > 1 && (
-                <polyline
-                    points={campusPath.map(n => `${n.x},${n.y}`).join(' ')}
-                    fill="none" stroke="#0EA5E9" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="1,12" style={{ animation: 'flow 2s linear infinite' }}
-                />
-            )}
 
             {FLAT.map(b => {
                 const full = BUILDINGS.find(x => x.id === b.id);
@@ -486,7 +476,6 @@ export default function CampusMap() {
     const [floor, setFloor] = useState(0);
     const [startNode, setStartNode] = useState('');
     const [endNode, setEndNode] = useState('');
-    const [destBuildingId, setDestBuildingId] = useState('');
     const [navigation, setNavigation] = useState(null);
     const [walking, setWalking] = useState(false);
     const [userPos, setUserPos] = useState(null);
@@ -515,60 +504,22 @@ export default function CampusMap() {
 
     const handleNavigate = () => {
         if (!startNode || !endNode) return;
+        const graph = NAV_GRAPHS[selected.id];
+        if (!graph) return;
 
-        let fullPath = [];
-        let instructions = [];
-        let totalDist = 0;
+        const path = findPath(graph, startNode, endNode);
+        if (!path || path.length < 2) return;
 
-        const isGlobal = !!destBuildingId && destBuildingId !== selected?.id;
+        const instructions = generateInstructions(path);
+        const dist = calculateDistance(path);
 
-        if (!isGlobal) {
-            // Standard Indoor Navigation
-            const graph = NAV_GRAPHS[selected.id];
-            if (!graph) return;
-            const path = findPath(graph, startNode, endNode);
-            if (!path || path.length < 2) return;
-            fullPath = path;
-            instructions = generateInstructions(path);
-            totalDist = calculateDistance(path);
-        } else {
-            // Global Cross-Building Navigation
-            const campusGraph = NAV_GRAPHS.campus;
-            const startBuildingGraph = NAV_GRAPHS[selected.id];
-            const endBuildingGraph = NAV_GRAPHS[destBuildingId];
-
-            if (!campusGraph || !startBuildingGraph || !endBuildingGraph) return;
-
-            // 1. Path from start room to building exit
-            const startExit = startBuildingGraph.nodes.find(n => n.type === 'entry');
-            const path1 = findPath(startBuildingGraph, startNode, startExit.id);
-
-            // 2. Path across campus
-            const campusStart = campusGraph.nodes.find(n => n.buildingId === selected.id);
-            const campusEnd = campusGraph.nodes.find(n => n.buildingId === destBuildingId);
-            const path2 = findPath(campusGraph, campusStart.id, campusEnd.id);
-
-            // 3. Path from building entry to destination room
-            const endEntry = endBuildingGraph.nodes.find(n => n.type === 'entry');
-            const path3 = findPath(endBuildingGraph, endEntry.id, endNode);
-
-            if (path1 && path2 && path3) {
-                fullPath = [...path1, ...path2, ...path3];
-                instructions = [
-                    ...generateInstructions(path1),
-                    { type: 'info', text: `Exit ${selected.label} and head towards ${BUILDINGS.find(b => b.id === destBuildingId)?.label}` },
-                    ...generateInstructions(path2),
-                    { type: 'info', text: `Enter ${BUILDINGS.find(b => b.id === destBuildingId)?.label}` },
-                    ...generateInstructions(path3)
-                ];
-                totalDist = calculateDistance(path1) + calculateDistance(path2) + calculateDistance(path3);
-            }
-        }
-
-        if (fullPath.length > 0) {
-            setNavigation({ path: fullPath, instructions, distance: totalDist, time: Math.ceil(totalDist / 1.4 / 60) });
-            setUserPos(fullPath[0]);
-        }
+        setNavigation({
+            path,
+            instructions,
+            distance: dist,
+            time: Math.ceil(dist / 1.4 / 60) // 1.4 m/s walking speed
+        });
+        setUserPos(path[0]);
     };
 
     const launchAR = () => navigate(selected ? `/ar-navigation?dest=${selected.id}&label=${encodeURIComponent(selected.label)}` : '/ar-navigation');
@@ -641,6 +592,34 @@ export default function CampusMap() {
                             ))}
                         </div>
                     </>}
+
+                    {selected && view === 'fp' && (
+                        <div className="nav-controls card card-p">
+                            <h3 className="text-sm font-bold mb-3 flex items-center gap-2">🧭 Indoor Navigation</h3>
+                            <div className="nav-field">
+                                <label>From (Room):</label>
+                                <select value={startNode} onChange={e => setStartNode(e.target.value)} className="input-field text-xs">
+                                    <option value="">Select starting room...</option>
+                                    {(NAV_GRAPHS[selected.id]?.nodes || []).map(n => (
+                                        <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="nav-field">
+                                <label>To (Room):</label>
+                                <select value={endNode} onChange={e => setEndNode(e.target.value)} className="input-field text-xs">
+                                    <option value="">Select destination...</option>
+                                    {(NAV_GRAPHS[selected.id]?.nodes || []).filter(n => n.type === 'room').map(n => (
+                                        <option key={n.id} value={n.id}>{n.label || n.id} (Floor {n.floor})</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="flex gap-2 mt-4">
+                                <button className="btn btn-primary flex-1 btn-sm" onClick={handleNavigate} disabled={!startNode || !endNode}>Start Navigation</button>
+                                <button className="btn btn-secondary btn-sm" onClick={clearNav}>Clear</button>
+                            </div>
+                        </div>
+                    )}
                 </aside>
 
                 <div className="map-container">
@@ -684,7 +663,7 @@ export default function CampusMap() {
                     ) : view === '3d' ? (
                         <Map3D buildings={filtered} selected={selected} onSelect={b => { pick(b); }} />
                     ) : (
-                        <Flat2D selected={selected} onSelect={pick} navigation={navigation} />
+                        <Flat2D selected={selected} onSelect={pick} />
                     )}
                 </div>
             </div>
