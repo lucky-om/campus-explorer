@@ -160,9 +160,15 @@ function FloorPlanSVG({ plan, fi, navigation, buildingId }) {
     const floor = plan.floors[fi] || plan.floors[0];
     const { outer, W, rooms, corridors, doors, windows, cols, stairs } = floor;
 
-    // Build path nodes for current floor from the indoor portion of navigation
-    const navNodes = navigation?.path?.filter(
-        n => !n.id.startsWith('CP-') && !n.id.startsWith('ENT-') && n.floor === fi
+    // Build the set of node IDs that belong to THIS building's graph only
+    const buildingNodeIds = new Set(
+        (NAV_GRAPHS[buildingId]?.nodes || []).map(n => n.id)
+    );
+
+    // Filter: must belong to this building's graph AND be on the current floor
+    const navNodes = (navigation?.path || []).filter(
+        n => buildingNodeIds.has(n.id) && n.floor === fi
+
     ) || [];
     const navPoints = navNodes.length > 1 ? navNodes.map(n => `${n.x},${n.y}`).join(' ') : null;
     const navStart = navNodes[0];
