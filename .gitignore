@@ -1,0 +1,16 @@
+node_modules/
+.DS_Store
+dist/
+build/
+.env
+*.log
+.gemini/
+.agents/
+.agent/
+_agents/
+_agent/
+brain/
+campus-explorer-frontend/node_modules/
+campus-explorer-backend/node_modules/
+frontend/node_modules/
+backend/node_modules/
