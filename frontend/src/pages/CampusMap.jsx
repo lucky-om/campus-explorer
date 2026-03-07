@@ -745,24 +745,7 @@ export default function CampusMap() {
                         </div>
                     )}
 
-                    <div className="loc-list-head">Buildings ({filtered.length})</div>
-                    <div className="loc-list">
-                        {filtered.map(b => (
-                            <div key={b.id} className={`loc-list-row ${selected?.id === b.id ? 'active' : ''}`} onClick={() => pick(b)}>
-                                <span>{b.icon} {b.label}</span><span className="tag">{b.floors}F</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {dbLoc.length > 0 && <>
-                        <div className="loc-list-head">Rooms ({dbLoc.length})</div>
-                        <div className="loc-list">
-                            {dbLoc.filter(l => !search || l.name.toLowerCase().includes(search.toLowerCase())).slice(0, 6).map(l => (
-                                <div key={l.id} className="loc-list-row"><span>📍 {l.name}</span><span className="tag">{l.type}</span></div>
-                            ))}
-                        </div>
-                    </>}
-
+                    {/* ── Navigation Controls (between floor plan & buildings) ── */}
                     {selected && (view === 'fp' || view === '2d' || view === '3d') && (
                         <div className="card card-p" style={{ borderTop: '2px solid var(--brand)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -809,10 +792,9 @@ export default function CampusMap() {
                         </div>
                     )}
 
-                    {/* Navigation result card */}
+                    {/* ── Route Result Card ── */}
                     {navigation && (
                         <div className="card card-p" style={{ borderTop: '2px solid var(--brand)' }}>
-                            {/* Same header style as nav card */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
                                 <div style={{ width: '26px', height: '26px', borderRadius: '7px', background: 'linear-gradient(135deg, var(--brand), var(--accent))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', flexShrink: 0 }}>🗺️</div>
                                 <div style={{ flex: 1 }}>
@@ -821,20 +803,15 @@ export default function CampusMap() {
                                 </div>
                                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--accent)', animation: 'pulse 1.6s ease-in-out infinite', flexShrink: 0 }} />
                             </div>
-
                             <div style={{ fontSize: '0.67rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.7px', color: 'var(--text-3)', marginBottom: '6px' }}>Step-by-step Instructions</div>
-
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', maxHeight: '200px', overflowY: 'auto' }}>
                                 {navigation.instructions.map((ins, i) => (
                                     <div key={i} style={{
                                         display: 'flex', alignItems: 'flex-start', gap: '6px',
                                         padding: '5px 7px', borderRadius: '7px', fontSize: '0.73rem', lineHeight: '1.4',
-                                        background: ins.type === 'floor' ? 'rgba(91,79,233,0.09)'
-                                            : ins.type === 'arrive' ? 'rgba(16,185,129,0.09)' : 'transparent',
-                                        color: ins.type === 'floor' ? 'var(--brand)'
-                                            : ins.type === 'arrive' ? '#10B981' : 'var(--text-2)',
-                                        borderLeft: ins.type === 'floor' ? '2px solid var(--brand)'
-                                            : ins.type === 'arrive' ? '2px solid #10B981' : 'none',
+                                        background: ins.type === 'floor' ? 'rgba(91,79,233,0.09)' : ins.type === 'arrive' ? 'rgba(16,185,129,0.09)' : 'transparent',
+                                        color: ins.type === 'floor' ? 'var(--brand)' : ins.type === 'arrive' ? '#10B981' : 'var(--text-2)',
+                                        borderLeft: ins.type === 'floor' ? '2px solid var(--brand)' : ins.type === 'arrive' ? '2px solid #10B981' : 'none',
                                     }}>
                                         <span style={{ flexShrink: 0 }}>{ins.text.slice(0, 2)}</span>
                                         <span>{ins.text.slice(2).trim()}</span>
@@ -843,6 +820,25 @@ export default function CampusMap() {
                             </div>
                         </div>
                     )}
+
+                    <div className="loc-list-head">Buildings ({filtered.length})</div>
+                    <div className="loc-list">
+                        {filtered.map(b => (
+                            <div key={b.id} className={`loc-list-row ${selected?.id === b.id ? 'active' : ''}`} onClick={() => pick(b)}>
+                                <span>{b.icon} {b.label}</span><span className="tag">{b.floors}F</span>
+                            </div>
+                        ))}
+                    </div>
+
+                    {dbLoc.length > 0 && <>
+                        <div className="loc-list-head">Rooms ({dbLoc.length})</div>
+                        <div className="loc-list">
+                            {dbLoc.filter(l => !search || l.name.toLowerCase().includes(search.toLowerCase())).slice(0, 6).map(l => (
+                                <div key={l.id} className="loc-list-row"><span>📍 {l.name}</span><span className="tag">{l.type}</span></div>
+                            ))}
+                        </div>
+                    </>}
+
 
                 </aside>
 
